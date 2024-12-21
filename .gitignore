@@ -17,3 +17,7 @@ tests/.coverage*
 build/
 tests/report/
 tests/screenshots/
+env
+django/utils/html copy.py
+django/utils/imp.py
+testing_project
