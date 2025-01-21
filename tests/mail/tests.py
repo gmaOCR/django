@@ -1552,6 +1552,27 @@ class MailTests(MailTestsMixin, SimpleTestCase):
         self.assertIs(email.get_connection(), new_connection)
         self.assertNotIn("original", message.as_string())
 
+    def test_unicode_attachment_encoding(self):
+        """
+        Test that attaching a message containing non-ASCII characters does not
+        raise a UnicodeEncodeError.
+        """
+        att = """\
+        Subject: attachment
+        Content-Type: text/plain; charset=utf-8
+        Content-Transfer-Encoding: 8bit
+
+        ¡8-bit content!
+        """.encode()
+
+        email = EmailMessage(to=["test@example.com"])
+        email.attach("attachment.eml", att, "message/rfc822")
+
+        try:
+            email.message().as_bytes()
+        except UnicodeEncodeError as e:
+            self.fail(f"UnicodeEncodeError was raised: {e}")
+
 
 @requires_tz_support
 class MailTimeZoneTests(MailTestsMixin, SimpleTestCase):
